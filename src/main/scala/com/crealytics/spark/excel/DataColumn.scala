@@ -63,7 +63,11 @@ class HeaderDataColumn(
       cell.getCellType match {
         case CellType.FORMULA =>
           cell.getCachedFormulaResultType match {
-            case CellType.STRING => Option(cell.getRichStringCellValue).map(_.getString)
+            case CellType.STRING =>
+              cell.getHyperlink match {
+                case null => Option(cell.getRichStringCellValue).map(_.getString)
+                case _ => Option(cell.getHyperlink).map(_.getAddress)
+              }
             case CellType.NUMERIC => Option(cell.getNumericCellValue).map(_.toString)
             case CellType.BLANK => None
             case _ => Some(dataFormatter.formatCellValue(cell))
